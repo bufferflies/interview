@@ -1,4 +1,4 @@
-package array
+package tree
 
 import "testing"
 
