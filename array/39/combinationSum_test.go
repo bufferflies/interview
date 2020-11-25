@@ -1,4 +1,4 @@
-package array
+package _9
 
 import (
 	"fmt"
@@ -13,7 +13,7 @@ import (
 //
 //所有数字（包括 target）都是正整数。
 //解集不能包含重复的组合。
-//示例 1：
+//示例 11：
 //
 //输入：candidates = [2,3,6,7], target = 7,
 //所求解集为：

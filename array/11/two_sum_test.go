@@ -1,4 +1,4 @@
-package array
+package _1
 
 import (
 	"testing"
