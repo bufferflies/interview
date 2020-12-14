@@ -1,4 +1,4 @@
-package node
+package _2
 
 import "testing"
 

@@ -8,7 +8,7 @@ type TreeNode struct {
 }
 
 // 寻找数组
-func findIndex(arr []int, target int) (index int) {
+func FindIndex(arr []int, target int) (index int) {
 	for i, v := range arr {
 		if v == target {
 			return i
