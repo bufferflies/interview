@@ -97,14 +97,14 @@ func (this *Skiplist) Add(num int) {
 	arr := make([]*Node, n)
 	tmp := &Node{val: math.MinInt16}
 	// 从上面开始创建
-	for i := n - 1; i >= 0; i-- {
-		a := arr[i]
+	for i, a := range arr {
 		p := pre[i]
 		a = &Node{val: num, right: p.right}
 		p.right = a
 		// 0层不应该有向下指针
-		if i != n-1 {
-			tmp.down = a
+		//t := tmp
+		if i != 0 {
+			a.down = tmp
 		}
 		tmp = a
 	}
