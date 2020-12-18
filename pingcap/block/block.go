@@ -1,8 +1,13 @@
-package cmd
+package block
 
 import (
+	"os"
+
 	"git.code.oa.com/geeker/awesome-work/pingcap/common"
+	"k8s.io/klog"
 )
+
+const KeySizeLength = 4
 
 // Block
 type Block struct {
@@ -10,6 +15,8 @@ type Block struct {
 	Key       []byte
 	ValueSize int
 	Value     []byte
+	Offset    int64
+	Length    int64
 }
 
 // NewBlock
@@ -24,9 +31,9 @@ func NewBlock(key []byte, value []byte) Block {
 
 // Encode
 func Decode(body []byte) Block {
-	keySize := common.BytesToInt(body[:4])
-	key := body[4 : 4+keySize]
-	valueSize := common.BytesToInt(body[4+keySize : 4+keySize+4])
+	keySize := common.BytesToInt(body[:KeySizeLength])
+	key := body[KeySizeLength : KeySizeLength+keySize]
+	valueSize := common.BytesToInt(body[KeySizeLength+keySize : KeySizeLength+keySize+KeySizeLength])
 	value := body[4+keySize+4:]
 	return Block{
 		KeySize:   keySize,
@@ -45,4 +52,17 @@ func Encode(b Block) []byte {
 	copy(ret[4+b.KeySize:4+b.KeySize+4], common.IntToBytes(b.ValueSize))
 	copy(ret[4+b.KeySize+4:], b.Value)
 	return ret
+}
+
+func GenerateBlock(size int, path string) {
+	f, err := os.Create(path)
+	if err != nil {
+		klog.Errorf("create file failed,err:%v", err)
+	}
+	defer f.Close()
+	for i := 0; i < size; i++ {
+		k := common.IntToBytes(i)
+		b := NewBlock(k, k)
+		f.Write(Encode(b))
+	}
 }

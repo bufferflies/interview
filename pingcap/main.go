@@ -15,7 +15,10 @@ limitations under the License.
 */
 package main
 
-import "git.code.oa.com/geeker/awesome-work/pingcap/cmd"
+import (
+	"git.code.oa.com/geeker/awesome-work/pingcap/cmd"
+	_ "git.code.oa.com/geeker/awesome-work/pingcap/cmd"
+)
 
 func main() {
 	cmd.Execute()
