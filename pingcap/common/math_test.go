@@ -27,7 +27,7 @@ func TestUnit_Int64(t *testing.T) {
 		n int64
 	}{
 		{1},
-		{1 << 10},
+		{-1},
 		{1 << 20},
 	}
 	for _, v := range r {

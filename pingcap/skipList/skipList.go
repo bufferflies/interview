@@ -3,6 +3,8 @@ package skipList
 import (
 	"math"
 	"math/rand"
+
+	"git.code.oa.com/geeker/awesome-work/pingcap/domain"
 )
 
 // SkipList
@@ -19,7 +21,7 @@ type Node struct {
 	right *Node
 	down  *Node
 	key   uint64
-	val   interface{}
+	val   domain.Codec
 }
 
 func Constructor(maxLevel int) SkipList {
@@ -45,9 +47,12 @@ func Constructor(maxLevel int) SkipList {
 		maxRand:  1<<maxLevel - 1,
 	}
 }
-func (this *SkipList) ToValues() []interface{} {
+func (this *SkipList) Size() int {
+	return this.size
+}
+func (this *SkipList) ToValues() []domain.Codec {
 	tail := this.tail.right
-	ret := make([]interface{}, this.size)
+	ret := make([]domain.Codec, this.size)
 	for i := 0; tail != nil && tail.right != nil; i++ {
 		ret[i] = tail.val
 		tail = tail.right
@@ -75,7 +80,7 @@ func (this *SkipList) Search(target uint64) bool {
 	}
 	return false
 }
-func (this *SkipList) Add(num uint64, val interface{}) {
+func (this *SkipList) Add(num uint64, val domain.Codec) {
 	pre := make([]*Node, this.maxLevel)
 	head := this.head
 	// 找到每次最小于num的node

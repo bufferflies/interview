@@ -8,8 +8,15 @@ type Index struct {
 	Entries []Entry
 }
 type Entry struct {
-	hash   uint64
-	offset int64
+	Hash   uint64
+	Offset int64
+}
+
+func NewEntry(hash uint64, offset int64) Entry {
+	return Entry{
+		Hash:   hash,
+		Offset: offset,
+	}
 }
 
 func (i *Index) Encode() []byte {
@@ -33,12 +40,12 @@ func (i *Index) Decode(bytes []byte) {
 
 func (e *Entry) Encode() []byte {
 	ret := make([]byte, 16)
-	copy(ret[:8], common.Uint64ToBytes(e.hash))
-	copy(ret[8:], common.Int64ToBytes(e.offset))
+	copy(ret[:8], common.Uint64ToBytes(e.Hash))
+	copy(ret[8:], common.Int64ToBytes(e.Offset))
 	return ret
 }
 
 func (e *Entry) Decode(bytes []byte) {
-	e.hash = common.BytesToUint64(bytes[:8])
-	e.offset = common.BytesToInt64(bytes[8:])
+	e.Hash = common.BytesToUint64(bytes[:8])
+	e.Offset = common.BytesToInt64(bytes[8:])
 }

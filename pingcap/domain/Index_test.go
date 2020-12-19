@@ -11,12 +11,12 @@ func TestUnit_Should_Codec_Entry(t *testing.T) {
 	te := assert.New(t)
 	entries := []Entry{
 		{
-			hash:   uint64(1),
-			offset: int64(1),
+			Hash:   uint64(1),
+			Offset: int64(1),
 		},
 		{
-			hash:   uint64(1 << 10),
-			offset: int64(1 << 10),
+			Hash:   uint64(1 << 10),
+			Offset: int64(1 << 10),
 		},
 	}
 	for _, v := range entries {
