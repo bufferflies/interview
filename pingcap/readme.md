@@ -1,6 +1,6 @@
 # 计算
 ## 方案一
-![version1(../assert/ans1-preread.png)
+![version1](https://raw.githubusercontent.com/bufferflies/interview/master/pingcap/assert/1T-version1.png)
 
 ### 设计缘由
 
@@ -71,8 +71,8 @@ k: hash次数 k=(m/n)*ln2=7
 3. 使用Bloom Filter 快速查询key对应的索引 ，提高无效查询（额外的空间）
 
 
-## 方案二
-![version1(../assert/ans1-preread.png)
+## 方案二(未完成)
+![version1](https://raw.githubusercontent.com/bufferflies/interview/master/pingcap/assert/1T-version2.jpg)
 ### 主要解决的问题
 是不是可以不需要Bloom Filter 也能找到key对应的index 文件
 
