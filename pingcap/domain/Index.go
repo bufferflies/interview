@@ -13,10 +13,11 @@ type Entry struct {
 	Key    []byte
 }
 
-func NewEntry(hash uint64, offset int64) Entry {
+func NewEntry(hash uint64, offset int64, key []byte) Entry {
 	return Entry{
 		Hash:   hash,
 		Offset: offset,
+		Key:    key,
 	}
 }
 

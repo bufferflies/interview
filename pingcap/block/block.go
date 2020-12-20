@@ -17,6 +17,7 @@ type Block struct {
 	Value     []byte
 	Offset    int64
 	Length    int64
+	Cached    bool
 }
 
 // NewBlock

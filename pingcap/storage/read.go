@@ -19,7 +19,8 @@ func NewRead(path string) *Read {
 		return nil
 	}
 	return &Read{
-		r: r,
+		r:    r,
+		path: path,
 	}
 }
 func (read *Read) Close() {

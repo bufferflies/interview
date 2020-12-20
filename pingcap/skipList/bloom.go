@@ -9,29 +9,6 @@ import (
 	"k8s.io/klog"
 )
 
-type SlotMeta struct {
-	slots map[int][]*Slot
-}
-
-func (m *SlotMeta) Register(s *Slot) {
-	slots, ok := m.slots[s.Id]
-	if !ok {
-		slots = make([]*Slot, 0)
-		m.slots[s.Id] = slots
-	}
-	m.slots[s.Id] = append(m.slots[s.Id], s)
-}
-
-func (m *SlotMeta) Test(key []byte, index int) []*Slot {
-	ret := make([]*Slot, 0)
-	for _, v := range m.slots[index] {
-		if v.Test(key) {
-			ret = append(ret, v)
-		}
-	}
-	return ret
-}
-
 type Slot struct {
 	Filter *bloom.BloomFilter
 	// 属于哪一个id
@@ -49,6 +26,14 @@ func NewSlot(m, k uint, id int, location string, file string) *Slot {
 		location: location,
 		File:     file,
 	}
+}
+func FromFile(location string) *Slot {
+	s := &Slot{
+		Filter:   bloom.New(1, 1),
+		location: location,
+	}
+	s.Load()
+	return s
 }
 
 func (s *Slot) Add(key []byte) {

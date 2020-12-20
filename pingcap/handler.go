@@ -63,7 +63,7 @@ func (w *WriteLoop) start() {
 			if w.list.Size() >= w.bufferSize {
 				w.write()
 			}
-			w.slot.Test(m.Key)
+			w.slot.Add(m.Key)
 			w.list.Add(m.Hash, &m)
 		case <-w.stopCh:
 			klog.Infof("write %d stop", w.id)
@@ -96,8 +96,8 @@ func (w *WriteLoop) write() {
 		}
 	}
 	f.Write(b.Bytes())
-	w.count++
 	w.slot.Save()
+	w.count++
 	w.list = skipList.Constructor(w.bufferSize)
 	w.slot = skipList.NewSlot(constant.BloomM, constant.BloomK, w.id,
 		w.getBloom(), w.getFile())
