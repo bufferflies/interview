@@ -4,6 +4,9 @@ import (
 	"bytes"
 	"os"
 	"strconv"
+	"sync"
+
+	"git.code.oa.com/geeker/awesome-work/pingcap/constant"
 
 	"git.code.oa.com/geeker/awesome-work/pingcap/domain"
 	"git.code.oa.com/geeker/awesome-work/pingcap/skipList"
@@ -18,34 +21,54 @@ type WriteLoop struct {
 
 	list  skipList.SkipList
 	count int
-	path  string
+	//path  string
+	dir  string
+	slot *skipList.Slot
+
+	wg *sync.WaitGroup
 }
 
-func NewWriteLoop(size int, id int, level int, stop chan struct{}, path string) *WriteLoop {
-	err := os.MkdirAll(path, os.ModePerm)
-	if err != nil {
-		klog.Fatalf("create dir failed ,err%v", err)
-	}
-	return &WriteLoop{
+func NewWriteLoop(size int, id int, level int, dir string, wg *sync.WaitGroup) *WriteLoop {
+
+	w := &WriteLoop{
 		blockChan:  make(chan domain.Entry, size),
-		stopCh:     stop,
+		stopCh:     make(chan struct{}),
 		id:         id,
 		list:       skipList.Constructor(level),
 		bufferSize: 1 << level,
-		path:       path,
+		dir:        dir,
+		wg:         wg,
 	}
+	err := os.MkdirAll(w.dir+"/"+strconv.Itoa(id), os.ModePerm)
+	if err != nil {
+		klog.Fatalf("create dir failed ,err%v", err)
+	}
+	w.slot = skipList.NewSlot(constant.BloomM, constant.BloomK, w.id,
+		w.getBloom(), w.getFile())
+	return w
 }
 func (w *WriteLoop) start() {
+	klog.Infof("write loop %d start  ", w.id)
+	defer func() {
+		klog.Infof("write loop %d end  ", w.id)
+	}()
 	for {
 		select {
-		case m := <-w.blockChan:
+		case m, ok := <-w.blockChan:
+			if !ok {
+				w.write()
+				w.wg.Done()
+				return
+			}
 			if w.list.Size() >= w.bufferSize {
 				w.write()
 			}
+			w.slot.Test(m.Key)
 			w.list.Add(m.Hash, &m)
 		case <-w.stopCh:
 			klog.Infof("write %d stop", w.id)
 			w.write()
+			w.wg.Done()
 			return
 		}
 	}
@@ -53,11 +76,16 @@ func (w *WriteLoop) start() {
 func (w *WriteLoop) Send(entry domain.Entry) {
 	w.blockChan <- entry
 }
+func (w *WriteLoop) Close() {
+	close(w.blockChan)
+}
+func (w *WriteLoop) Stop() {
+	w.stopCh <- struct{}{}
+}
 func (w *WriteLoop) write() {
-	file := w.path + "/segment_" + strconv.Itoa(w.id) + "_" + strconv.Itoa(w.count) + ".index"
-	f, err := os.Create(file)
+	f, err := os.Create(w.getFile())
 	if err != nil {
-		klog.Errorf("create file error:%v", err)
+		klog.Errorf("create file constant:%v", err)
 	}
 	defer f.Close()
 	b := bytes.Buffer{}
@@ -69,5 +97,14 @@ func (w *WriteLoop) write() {
 	}
 	f.Write(b.Bytes())
 	w.count++
+	w.slot.Save()
 	w.list = skipList.Constructor(w.bufferSize)
+	w.slot = skipList.NewSlot(constant.BloomM, constant.BloomK, w.id,
+		w.getBloom(), w.getFile())
+}
+func (w *WriteLoop) getFile() string {
+	return w.dir + "/" + strconv.Itoa(w.id) + "/segment_" + strconv.Itoa(w.count) + ".index"
+}
+func (w *WriteLoop) getBloom() string {
+	return w.dir + "/" + strconv.Itoa(w.id) + "/segment_" + strconv.Itoa(w.count) + ".bloom"
 }

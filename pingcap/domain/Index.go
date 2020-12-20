@@ -10,6 +10,7 @@ type Index struct {
 type Entry struct {
 	Hash   uint64
 	Offset int64
+	Key    []byte
 }
 
 func NewEntry(hash uint64, offset int64) Entry {

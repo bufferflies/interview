@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"git.code.oa.com/geeker/awesome-work/pingcap/common"
-	error2 "git.code.oa.com/geeker/awesome-work/pingcap/error"
+	error2 "git.code.oa.com/geeker/awesome-work/pingcap/constant"
 )
 
 // Search
@@ -47,7 +47,6 @@ func Search(file string, key uint64) ([]byte, error) {
 		return nil, error2.KeyIsNotExistError
 	}
 	ret := bytes.Buffer{}
-	//ret.Write(body[middle : middle+16])
 	for ; common.BytesToUint64(body[middle:middle+8]) == key; middle = middle + 16 {
 		ret.Write(body[middle : middle+16])
 	}
