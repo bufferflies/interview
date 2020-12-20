@@ -9,6 +9,8 @@ require (
 	github.com/spf13/cobra v1.1.1
 	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.6.1
+	github.com/willf/bitset v1.1.11 // indirect
+	github.com/willf/bloom v2.0.3+incompatible
 	golang.org/x/exp v0.0.0-20191030013958-a1ab85dbe136
 	k8s.io/klog v1.0.0
 )

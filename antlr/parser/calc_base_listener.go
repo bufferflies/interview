@@ -12,7 +12,7 @@ var _ CalcListener = &BaseCalcListener{}
 // VisitTerminal is called when a terminal node is visited.
 func (s *BaseCalcListener) VisitTerminal(node antlr.TerminalNode) {}
 
-// VisitErrorNode is called when an error node is visited.
+// VisitErrorNode is called when an constant node is visited.
 func (s *BaseCalcListener) VisitErrorNode(node antlr.ErrorNode) {}
 
 // EnterEveryRule is called when any rule is entered.

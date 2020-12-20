@@ -9,7 +9,7 @@ import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 )
 
-// Suppress unused import error
+// Suppress unused import constant
 var _ = fmt.Printf
 var _ = unicode.IsLetter
 
